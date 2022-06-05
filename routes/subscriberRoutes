@@ -1,0 +1,102 @@
+const router = require("express").Router()
+const Subscriber = require('../models/Subscriber')
+
+function validateEmail(email) {
+    if (email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )) return true
+  }
+//adiciona novo inscrito
+router.post('/', async (req, res) => {
+
+    const { name, email } = req.body
+
+    const subscription = {
+        name,
+        email,
+    }
+    if(!name) {
+        res.status(422).json({message: "O campo Nome é obrigatorio."})
+        return
+    }
+
+    if(!validateEmail(email)) {
+        res.status(422).json({message: "Verifique o email digitado e tente novamente."})
+        return
+    }
+
+    //cria entidade ao passar nos testes definidos no model.
+    try{
+        await Subscriber.create(subscription)
+        res.status(201).json({message: 'Inscrição feita com sucesso!'})
+        
+    } catch(error) {res.status(500).json({error: error})}
+    
+})
+
+
+//busca toda a lista de inscritos do banco
+router.get('/', async (req, res) => {
+
+    try{
+        const subscribers = await Subscriber.find()
+        res.status(200).json(subscribers)      
+    } 
+    catch(error) {res.status(500).json({error: error})}   
+})
+
+
+//buscar inscrito por email, podemos ter uma busca para cada campo se necessário.
+router.get('/:email', async(req, res) => {
+    const email = req.params.email
+
+    try { const subscriber = await Subscriber.findOne({email: email})
+
+    if(!subscriber) {
+        res.status(422).json({message: "Nenhum cadastro encontrado com este parametro"})
+        return
+    }
+    res.status(200).json(subscriber) } catch (error) { 
+        res.status(500).json({error:error})}
+})
+
+//altera dado do cadastro
+router.patch('/:email', async (req, res) => {
+    const email2 = req.params.email
+    const { name, email } = req.body
+
+    const subscription = {
+        name,
+        email,
+    }
+
+    try { const attSubscription = await Subscriber.updateOne({email: email2}, subscription)
+
+    if (attSubscription.matchedCount === 0) {res.status(422).json({message: "Nenhum cadastro foi atualizado/encontrado"})
+    return }
+    res.status(200).json(subscription) 
+
+    } catch(error) {res.status(500).json({error: error})}
+})
+
+
+//deletar um cadastro
+router.delete('/:email', async (req, res) => {
+    const email3 = req.params.email
+
+    const subscriber = await Subscriber.findOne({email: email3})
+
+    if(!subscriber) {
+        res.status(422).json({message: "Nenhum cadastro encontrado com este parametro"})
+        return
+    } try {
+        await subscriber.deleteOne({email: email3})
+        res.status(200).json({message: "Usuário removido com sucesso!"}) 
+    } catch(error) {res.status(500).json({error: error})}
+    
+})
+
+
+
+
+module.exports = router
