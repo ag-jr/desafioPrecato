@@ -34,6 +34,3 @@ app.use('/subscription', subscriberRoutes)
 app.get("/", (req, res) => {
     res.json({message: "api go brrrr"})
 })
-
-
-// mongodb+srv://ag-jr:<precato>@apicluster.wrtpp3n.mongodb.net/?retryWrites=true&w=majority

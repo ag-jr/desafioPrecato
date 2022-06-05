@@ -3,7 +3,9 @@
 -Para teste das rotas e funções foi utilizado o Postman. Parâmetros de inscrição esperados de formulários foram simulados através de JSON no body.
 
 -O Banco de dados utilizado foi o mongoDB, através do mongodbAtlas.
-        Para teste do código, é necessário criar um database teste em [Mongodb Cloud](cloud.mongodb.com), e inserir as credenciais de usuário e senha no arquivo app.js
+        Para teste do código, é necessário criar um database teste em [Mongodb Cloud](cloud.mongodb.com), e inserir as credenciais de usuário e senha no arquivo app.js, assim ocmo atualizar a URL em app.js em =>
+        
+`mongoose.connect`
 
 `const DB_USER = seu_usuario`
 
